@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/antchfx/htmlquery"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -27,13 +28,13 @@ func newInfo(channelID int, channelTitle string) *Info {
 		currentTopText: channelTopText,
 	}
 }
-func (info *Info) update() {
+func (info *Info) update(token string) {
 	topItemText, err := ask(info.channelID)
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		if topItemText != info.currentTopText {
-			err := info.informMe(topItemText)
+			err := info.informMe(topItemText, token)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -42,8 +43,8 @@ func (info *Info) update() {
 		}
 	}
 }
-func (info *Info) informMe(messageTitle string) error {
-	_, err := http.Get("https://sctapi.ftqq.com/SCT81476TcdRF4VBPsELPhLtP1uRkfd3X.send?title=" + info.channelTitle + "|" + messageTitle)
+func (info *Info) informMe(messageTitle string, token string) error {
+	_, err := http.Get("https://sctapi.ftqq.com/" + token + ".send?title=" + info.channelTitle + "|" + messageTitle)
 	if err != nil {
 		return err
 	} else {
@@ -66,11 +67,12 @@ func ask(channelID string) (string, error) {
 }
 
 func main() {
+	token := os.Args[1]
 	GuanQi := newInfo(387255, "观棋有语")
 	ChaHuaHui := newInfo(418553, "察话会")
 	for {
 		time.Sleep(10 * time.Minute)
-		GuanQi.update()
-		ChaHuaHui.update()
+		GuanQi.update(token)
+		ChaHuaHui.update(token)
 	}
 }
