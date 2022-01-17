@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/antchfx/htmlquery"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/antchfx/htmlquery"
 )
 
 type Info struct {
@@ -58,7 +59,7 @@ func ask(channelID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	nodes, err := htmlquery.QueryAll(doc, "/html/body/div/div/div[3]/div[2]/div[1]/div[2]/div/ul/li[1]/span[1]/a/p/text()")
+	nodes, err := htmlquery.QueryAll(doc, "/html/body/div/div/div[2]/div[2]/div[1]/div[2]/div/ul/li[1]/span[1]/a/p/text()")
 	if err != nil {
 		return "", err
 	}
