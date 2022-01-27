@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -53,7 +55,7 @@ func (info *Info) informMe(messageTitle string, token string) error {
 	}
 }
 
-func ask(channelID string) (string, error) {
+func ask_old(channelID string) (string, error) {
 	url := "https://www.qingting.fm/channels/" + channelID
 	doc, err := htmlquery.LoadURL(url)
 	if err != nil {
@@ -65,6 +67,26 @@ func ask(channelID string) (string, error) {
 	}
 	text := nodes[0]
 	return text.Data, nil
+}
+
+func ask(channelID string) (string, error) {
+	url := "https://i.qingting.fm/capi/v3/channel/" + channelID
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	s, err2 := ioutil.ReadAll(resp.Body)
+	if err2 != nil {
+		return "", err2
+	}
+	var jsonTemplate map[string]interface{}
+	err3 := json.Unmarshal(s, &jsonTemplate)
+	if err3 != nil {
+		return "", err3
+	}
+	data := (jsonTemplate["data"]).(map[string]interface{})
+	lastestProgram := data["latest_program"].(string)
+	return lastestProgram, nil
 }
 
 func main() {
